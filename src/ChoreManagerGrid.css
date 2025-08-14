@@ -22,41 +22,17 @@
 }
 
 .header-top {
-    display: flex;
-    align-items: center;
-    gap: 15px;
     margin-bottom: 15px;
-}
-
-.back-btn {
-    background: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.back-btn:hover {
-    background: #45a049;
-    transform: scale(1.1);
 }
 
 .header h1 {
     color: #4CAF50;
     font-size: 1.8rem;
-    margin: 0;
     font-weight: 600;
-    flex: 1;
+    margin: 0;
 }
 
-.week-selector {
+.week-navigation {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -88,145 +64,180 @@
 
 .main-content {
     padding: 20px;
+    overflow-x: auto;
 }
 
-.person-tabs {
-    display: flex;
+.chore-grid-container {
     background: white;
     border-radius: 15px;
-    margin-bottom: 20px;
-    overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-.person-tab {
-    flex: 1;
-    padding: 15px 20px;
-    border: none;
+.chore-grid {
+    display: flex;
+    flex-direction: column;
+    min-width: 800px;
+}
+
+.grid-header,
+.grid-row {
+    display: grid;
+    grid-template-columns: 200px repeat(4, 1fr);
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.grid-header {
     background: #f8f9fa;
-    color: #666;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    font-weight: 600;
+    color: #333;
 }
 
-.person-tab.active {
+.grid-row:hover {
+    background-color: #f8f9fa;
+}
+
+.grid-cell {
+    padding: 12px;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+}
+
+.grid-cell:last-child {
+    border-right: none;
+}
+
+.header-cell {
+    justify-content: center;
+    font-weight: 600;
+    background: #f1f3f4;
+}
+
+.chore-name-header {
+    justify-content: flex-start;
     background: #4CAF50;
     color: white;
 }
 
-.person-tab:hover:not(.active) {
-    background: #e9ecef;
+.week-header {
+    font-size: 0.9rem;
+    text-align: center;
 }
 
-.chore-sections {
+.current-week-header {
+    background: #4CAF50;
+    color: white;
+}
+
+.chore-name-cell {
+    justify-content: flex-start;
     position: relative;
+    padding-right: 40px;
 }
 
-.chore-section {
-    animation: fadeIn 0.3s ease;
+.chore-name {
+    font-weight: 500;
+    color: #333;
+    flex: 1;
+    margin-right: 8px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.chore-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.chore-item {
-    background: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    transition: all 0.3s ease;
-}
-
-.chore-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-}
-
-.chore-item.completed {
+.assignment-indicator {
+    font-size: 0.8rem;
+    margin-right: 8px;
     opacity: 0.7;
-    background: #f8f9fa;
 }
 
-.chore-checkbox {
+.delete-chore-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 50%;
     width: 24px;
     height: 24px;
-    border: 2px solid #ddd;
-    border-radius: 6px;
+    font-size: 1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}
-
-.chore-checkbox.checked {
-    background: #4CAF50;
-    border-color: #4CAF50;
-    color: white;
-}
-
-.chore-checkbox:hover {
-    border-color: #4CAF50;
-}
-
-.chore-name {
-    flex: 1;
-    font-size: 1rem;
-    color: #333;
-}
-
-.chore-item.completed .chore-name {
-    text-decoration: line-through;
-    color: #999;
-}
-
-.delete-chore {
-    background: #ff4757;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
+    opacity: 0.7;
     transition: all 0.3s ease;
 }
 
-.delete-chore:hover {
+.delete-chore-btn:hover {
+    opacity: 1;
     background: #ff3838;
+    transform: translateY(-50%) scale(1.1);
 }
 
-.add-chore-btn {
+.completion-cell {
+    justify-content: center;
+    gap: 4px;
+    padding: 8px;
+}
+
+.completion-square {
+    width: 32px;
+    height: 32px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: transparent;
+    position: relative;
+}
+
+.completion-square:hover {
+    border-color: #999;
+    transform: scale(1.05);
+}
+
+.completion-square.completed {
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.completion-square.person1 {
+    border-color: #FF9500;
+}
+
+.completion-square.person2 {
+    border-color: #007AFF;
+}
+
+.completion-square.completed::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.add-chore-grid-btn {
     width: 100%;
     padding: 16px;
-    background: rgba(255, 255, 255, 0.9);
-    border: 2px dashed #4CAF50;
-    border-radius: 12px;
-    color: #4CAF50;
+    background: #4CAF50;
+    color: white;
+    border: none;
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
-.add-chore-btn:hover {
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+.add-chore-grid-btn:hover {
+    background: #45a049;
 }
 
 .floating-actions {
@@ -253,6 +264,7 @@
     transform: scale(1.1);
 }
 
+/* Modal Styles */
 .modal {
     display: flex;
     position: fixed;
@@ -311,7 +323,8 @@
     font-weight: 500;
 }
 
-.setting-group input {
+.setting-group input,
+.setting-group select {
     width: 100%;
     padding: 12px;
     border: 2px solid #ddd;
@@ -320,7 +333,8 @@
     transition: border-color 0.3s ease;
 }
 
-.setting-group input:focus {
+.setting-group input:focus,
+.setting-group select:focus {
     outline: none;
     border-color: #4CAF50;
 }
@@ -343,6 +357,39 @@
 }
 
 /* Mobile optimizations */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 10px;
+    }
+    
+    .grid-header,
+    .grid-row {
+        grid-template-columns: 150px repeat(4, 1fr);
+    }
+    
+    .chore-grid {
+        min-width: 600px;
+    }
+    
+    .grid-cell {
+        padding: 8px;
+        min-height: 50px;
+    }
+    
+    .completion-square {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .week-header {
+        font-size: 0.8rem;
+    }
+    
+    .chore-name {
+        font-size: 0.9rem;
+    }
+}
+
 @media (max-width: 480px) {
     .header {
         padding: 15px;
@@ -352,17 +399,18 @@
         font-size: 1.5rem;
     }
     
-    .main-content {
-        padding: 15px;
+    .grid-header,
+    .grid-row {
+        grid-template-columns: 120px repeat(4, 1fr);
     }
     
-    .person-tab {
-        padding: 12px 15px;
-        font-size: 0.9rem;
+    .chore-grid {
+        min-width: 500px;
     }
     
-    .chore-item {
-        padding: 12px;
+    .completion-square {
+        width: 24px;
+        height: 24px;
     }
     
     .modal-content {
@@ -386,4 +434,35 @@
         bottom: max(20px, env(safe-area-inset-bottom));
         right: max(20px, env(safe-area-inset-right));
     }
+}
+
+/* New styles for Supabase version */
+.frequency-indicator {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+.checkbox-label {
+    display: block;
+    margin: 8px 0;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.completion-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }

@@ -1,4 +1,33 @@
-# Getting Started with Create React App
+# Family Chore Manager
+
+A React PWA for managing household chores with rotating assignments and cross-device synchronization using Supabase.
+
+## Features
+
+- 🏠 **Smart Chore Rotation**: Automatically assigns chores to family members based on frequency
+- 📱 **Cross-Device Sync**: Real-time synchronization across all devices
+- ⚡ **Optimistic Updates**: Instant UI feedback with database persistence
+- 📊 **Visual Grid**: Easy-to-use grid showing 4 weeks of chore assignments
+- 🎨 **Customizable**: User names and colors can be configured
+- 🔄 **Flexible Frequency**: Weekly, biweekly, monthly, or custom intervals
+
+## Setup
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Configure Supabase
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Copy `.env.example` to `.env.local`
+3. Fill in your Supabase project URL and anon key
+4. Run the SQL schema from `supabase-schema.sql` in your Supabase SQL editor
+
+### 3. Start Development Server
+```bash
+npm start
+```
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

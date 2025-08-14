@@ -1,9 +1,9 @@
 import React from 'react';
-import ChoreManager from './ChoreManager';
+import ChoreManagerGrid from './ChoreManagerGrid';
 import './App.css';
 
 function App() {
-  return <ChoreManager />;
+  return <ChoreManagerGrid />;
 }
 
 export default App;
