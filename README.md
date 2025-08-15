@@ -23,6 +23,10 @@ npm install
 2. Copy `.env.example` to `.env.local`
 3. Fill in your Supabase project URL and anon key
 4. Run the SQL schema from `supabase-schema.sql` in your Supabase SQL editor
+5. **Important for real-time sync**: Enable replication for the tables in your Supabase dashboard:
+   - Go to **Database** → **Replication**
+   - Enable replication for: `users`, `chore_templates`, `chore_assignments`, `chore_completions`
+   - This enables live updates across all devices and browser tabs
 
 ### 3. Start Development Server
 ```bash

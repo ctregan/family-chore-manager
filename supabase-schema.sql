@@ -148,3 +148,31 @@ BEGIN
   RETURN assigned_users[rotation_index];
 END;
 $$ LANGUAGE plpgsql STABLE;
+
+-- Enable Row Level Security (RLS) for all tables
+-- This is required for real-time subscriptions to work
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chore_templates ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chore_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE chore_completions ENABLE ROW LEVEL SECURITY;
+
+-- Create permissive policies that allow all operations
+-- Note: In production, you may want more restrictive policies based on user authentication
+CREATE POLICY "Allow all operations on users" ON users
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on chore_templates" ON chore_templates
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on chore_assignments" ON chore_assignments
+FOR ALL USING (true) WITH CHECK (true);
+
+CREATE POLICY "Allow all operations on chore_completions" ON chore_completions
+FOR ALL USING (true) WITH CHECK (true);
+
+-- Enable real-time replication for live updates across devices
+-- This allows real-time subscriptions to receive changes to these tables
+ALTER PUBLICATION supabase_realtime ADD TABLE users;
+ALTER PUBLICATION supabase_realtime ADD TABLE chore_templates;
+ALTER PUBLICATION supabase_realtime ADD TABLE chore_assignments;
+ALTER PUBLICATION supabase_realtime ADD TABLE chore_completions;

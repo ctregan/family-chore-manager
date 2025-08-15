@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { db, User, ChoreTemplate, ChoreCompletion, getWeekStart, formatDateForDB } from './lib/supabase';
+import { db, supabase, User, ChoreTemplate, ChoreCompletion, getWeekStart, formatDateForDB } from './lib/supabase';
 import './ChoreManagerGrid.css';
 
 const ChoreManagerGrid: React.FC = () => {
@@ -9,6 +9,8 @@ const ChoreManagerGrid: React.FC = () => {
   const [completions, setCompletions] = useState<ChoreCompletion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [lastSyncTime, setLastSyncTime] = useState<number>(Date.now());
   
   // Modal states
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -20,10 +22,37 @@ const ChoreManagerGrid: React.FC = () => {
   // Settings modal states
   const [editingUsers, setEditingUsers] = useState<User[]>([]);
 
+  // Network status monitoring
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOffline(false);
+      setError(null);
+      // Reload data when coming back online
+      loadInitialData();
+    };
+    
+    const handleOffline = () => {
+      setIsOffline(true);
+      setError('You are offline. Changes will be saved when you reconnect.');
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Helper: Handle errors consistently
   const handleError = (err: unknown, message: string) => {
     console.error(message, err);
-    setError(message);
+    if (isOffline) {
+      setError('You are offline. Please check your connection and try again.');
+    } else {
+      setError(message);
+    }
   };
 
   const loadCompletionsForDisplayedWeeks = async () => {
@@ -79,6 +108,72 @@ const ChoreManagerGrid: React.FC = () => {
       loadCompletionsForDisplayedWeeks();
     }
   }, [currentWeek]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Real-time subscriptions for live updates
+  useEffect(() => {
+    const subscriptions: any[] = [];
+
+    // Subscribe to chore completion changes
+    const completionSubscription = supabase
+      .channel('completions-' + Date.now()) // Unique channel name
+      .on('postgres_changes', 
+        { 
+          event: '*', 
+          schema: 'public', 
+          table: 'chore_completions'
+        },
+        (payload: any) => {
+          // Reload completions data whenever ANY completion changes
+          loadCompletionsForDisplayedWeeks();
+          setLastSyncTime(Date.now());
+        }
+      )
+      .subscribe();
+
+    // Subscribe to chore template changes (add/delete/update chores)
+    const templateSubscription = supabase
+      .channel('chore_templates')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'chore_templates' },
+        (payload: any) => {
+          // Reload templates when chores are added/deleted/updated
+          db.getChoreTemplates().then(setChoreTemplates).catch(console.error);
+        }
+      )
+      .subscribe();
+
+    // Subscribe to user changes (name/color updates)
+    const userSubscription = supabase
+      .channel('users')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'users' },
+        (payload: any) => {
+          // Reload users when settings are updated
+          db.getUsers().then(setUsers).catch(console.error);
+        }
+      )
+      .subscribe();
+
+    subscriptions.push(completionSubscription, templateSubscription, userSubscription);
+
+    // Fallback polling mechanism in case real-time doesn't work
+    const pollInterval = setInterval(() => {
+      // Only poll if we haven't received an update recently
+      const timeSinceLastSync = Date.now() - lastSyncTime;
+      if (timeSinceLastSync > 30000) { // 30 seconds
+        loadCompletionsForDisplayedWeeks();
+        setLastSyncTime(Date.now());
+      }
+    }, 30000); // Poll every 30 seconds (less aggressive since real-time works)
+
+    // Cleanup subscriptions and polling on unmount
+    return () => {
+      subscriptions.forEach(sub => {
+        supabase.removeChannel(sub);
+      });
+      clearInterval(pollInterval);
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Week navigation
   const getWeekString = (date: Date): string => {
@@ -180,12 +275,22 @@ const ChoreManagerGrid: React.FC = () => {
       try {
         const dbResult = await db.toggleChoreCompletion(choreId, weekDate, assignedUser.id);
         updateCompletionState(dbResult);
+        
+        // Clear any previous errors on successful operation
+        if (error && !isOffline) {
+          setError(null);
+        }
       } catch (dbError) {
         console.error('Database operation failed, reverting optimistic update:', dbError);
         
         // Revert optimistic update on database failure
         updateCompletionState(currentCompletion || null);
-        setError('Failed to update chore completion - reverted changes');
+        
+        if (isOffline) {
+          setError('You are offline. Please check your connection and try again.');
+        } else {
+          setError('Failed to update chore completion - reverted changes');
+        }
         throw dbError;
       }
     } catch (err) {
@@ -261,13 +366,14 @@ const ChoreManagerGrid: React.FC = () => {
     }
   };
 
+
   const displayWeeks = getDisplayWeeks();
 
   if (loading) {
     return <div className="app-container"><div>Loading...</div></div>;
   }
 
-  if (error) {
+  if (error && !isOffline) {
     return (
       <div className="app-container">
         <div>Error: {error}</div>
@@ -281,12 +387,35 @@ const ChoreManagerGrid: React.FC = () => {
       <header className="header">
         <div className="header-top">
           <h1>Family Chore Manager</h1>
+          {isOffline && (
+            <div style={{ 
+              fontSize: '0.8em', 
+              color: '#ff6b6b', 
+              fontWeight: 'bold',
+              marginTop: '4px'
+            }}>
+              📱 Offline Mode
+            </div>
+          )}
         </div>
         <div className="week-navigation">
           <button className="week-btn" onClick={() => changeWeek(-1)}>←</button>
           <span className="current-week">Week of {getWeekString(currentWeek)}</span>
           <button className="week-btn" onClick={() => changeWeek(1)}>→</button>
         </div>
+        {error && isOffline && (
+          <div style={{
+            backgroundColor: '#fff3cd',
+            color: '#856404',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontSize: '0.9em',
+            marginTop: '8px',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
       </header>
 
       <main className="main-content">
