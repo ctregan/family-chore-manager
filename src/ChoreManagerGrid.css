@@ -22,7 +22,16 @@
 }
 
 .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+}
+
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .header h1 {
@@ -465,4 +474,180 @@
     font-weight: bold;
     color: white;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* User Selector Styles */
+.user-selector {
+    text-align: center;
+}
+
+.user-selector h3 {
+    color: #4CAF50;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.user-options {
+    display: flex;
+    gap: 8px;
+}
+
+.user-option {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 60px;
+}
+
+.user-option:hover {
+    background: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+}
+
+.user-selector-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-greeting {
+    color: #4CAF50;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.change-user-btn {
+    background: transparent;
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+    border-radius: 15px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.change-user-btn:hover {
+    background: #4CAF50;
+    color: white;
+}
+
+/* User Stats Styles */
+.user-stats {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.stats-header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.stats-title {
+    color: #4CAF50;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.stats-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.stat-value.completed {
+    color: #4CAF50;
+}
+
+.stat-value.missed {
+    color: #f44336;
+}
+
+.stat-value.this-week {
+    color: #2196F3;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* Mobile user selector and stats adjustments */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .header-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .user-selector h3 {
+        margin-bottom: 5px;
+    }
+    
+    .user-selector-display {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+
+    .stats-grid {
+        gap: 15px;
+    }
+
+    .stat-value {
+        font-size: 1.2rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-stats {
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    .stats-grid {
+        gap: 10px;
+    }
+
+    .stat-value {
+        font-size: 1.1rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
 }

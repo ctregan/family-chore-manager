@@ -10,6 +10,8 @@ import { getWeekStart, getDisplayWeeks } from './utils/dateUtils';
 import { useChoreData } from './hooks/useChoreData';
 import { useRealTimeSync } from './hooks/useRealTimeSync';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { useUserPreference } from './hooks/useUserPreference';
+import { useUserStats } from './hooks/useUserStats';
 
 // Components
 import { ChoreGrid } from './components/ChoreGrid/ChoreGrid';
@@ -17,6 +19,8 @@ import { WeekNavigation } from './components/WeekNavigation/WeekNavigation';
 import { OfflineIndicator } from './components/ui/OfflineIndicator';
 import { AddChoreModal } from './components/modals/AddChoreModal';
 import { SettingsModal } from './components/modals/SettingsModal';
+import { UserSelector } from './components/UserSelector/UserSelector';
+import { UserStats } from './components/UserStats/UserStats';
 
 import './ChoreManagerGrid.css';
 
@@ -30,9 +34,11 @@ const ChoreManagerGrid: React.FC = () => {
 
   // Custom hooks
   const { isOffline } = useNetworkStatus();
+  const { selectedUserId, selectUser } = useUserPreference();
   const {
     users,
     choreTemplates,
+    completions,
     loading,
     error,
     loadInitialData,
@@ -45,6 +51,15 @@ const ChoreManagerGrid: React.FC = () => {
     getAssignedUser,
     getCompletionStatus
   } = useChoreData(currentWeek);
+
+  // User statistics
+  const userStats = useUserStats(
+    selectedUserId,
+    choreTemplates,
+    completions,
+    getAssignedUser,
+    currentWeek
+  );
 
   // Real-time synchronization
   useRealTimeSync({
@@ -166,13 +181,27 @@ const ChoreManagerGrid: React.FC = () => {
       <header className="header">
         <div className="header-top">
           <h1>Family Chore Manager</h1>
-          <OfflineIndicator isOffline={isOffline} error={error} />
+          <div className="header-controls">
+            <UserSelector 
+              users={users}
+              selectedUserId={selectedUserId}
+              onUserSelect={selectUser}
+            />
+            <OfflineIndicator isOffline={isOffline} error={error} />
+          </div>
         </div>
         
         <WeekNavigation 
           currentWeek={currentWeek} 
           onWeekChange={handleWeekChange} 
         />
+
+        {selectedUserId && users.length > 0 && (
+          <UserStats 
+            userName={users.find(u => u.id === selectedUserId)?.name || 'User'}
+            stats={userStats}
+          />
+        )}
       </header>
 
       <main className="main-content">
