@@ -2,8 +2,9 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders Family Chore Manager', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  // The app should show loading initially, then the title
+  const loadingOrTitle = screen.getByText(/Loading...|Family Chore Manager/i);
+  expect(loadingOrTitle).toBeInTheDocument();
 });
